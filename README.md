@@ -1,6 +1,10 @@
+![@sveltecraft/annotate](static/banner.png)
+
 # @sveltecraft/annotate
 
 Hand-drawn annotations for Svelte. Underline, highlight, circle, box, strike, cross off, and bracket your words with sketchy ink that draws itself on.
+
+If you want to create graphics with a hand-drawn, sketchy appearance in Svelte, check out [@sveltecraft/rough](https://github.com/matiadev/svelte-rough).
 
 ## Installation
 
