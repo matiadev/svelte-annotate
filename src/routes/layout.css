@@ -1,4 +1,10 @@
+@import '@fontsource/atkinson-hyperlegible';
+@import '@fontsource/atkinson-hyperlegible/700.css';
 @import 'tailwindcss';
+
+@theme {
+	--font-sans: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
+}
 
 @layer base {
 	:root {
@@ -6,6 +12,6 @@
 	}
 
 	body {
-		@apply bg-gray-950 text-neutral-100 antialiased;
+		@apply bg-gray-950 font-sans text-neutral-100 antialiased;
 	}
 }
