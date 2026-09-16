@@ -1,6 +1,6 @@
 {
 	"name": "@sveltecraft/annotate",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Hand-drawn annotations for Svelte",
 	"author": "Sveltecraft",
 	"license": "MIT",
