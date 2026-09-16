@@ -78,6 +78,16 @@ const BRACKET_TICK = 10;
 const HIGHLIGHT_OPACITY = 0.8;
 const HIGHLIGHT_OVERHANG = 2;
 
+const ANNOTATION_TYPES: AnnotationType[] = [
+	'underline',
+	'box',
+	'circle',
+	'highlight',
+	'strike-through',
+	'crossed-off',
+	'bracket'
+];
+
 export function normalizePadding(padding: Padding): [number, number, number, number] {
 	if (typeof padding === 'number') return [padding, padding, padding, padding];
 	if (padding.length === 2) return [padding[0], padding[1], padding[0], padding[1]];
@@ -93,6 +103,9 @@ function normalizeBrackets(
 }
 
 export function resolveOptions(options: AnnotateOptions): ResolvedOptions {
+	if (!ANNOTATION_TYPES.includes(options.type)) {
+		throw new Error(`annotate needs one of ${ANNOTATION_TYPES.join(', ')} as its type.`);
+	}
 	// brackets sit outside the content so they start with roomier padding
 	const defaultPadding = options.type === 'bracket' ? 12 : 5;
 	const [padTop, padRight, padBottom, padLeft] = normalizePadding(
@@ -414,18 +427,6 @@ export function buildFillPlan(lines: ContentBox[], options: ResolvedOptions): Fi
 	};
 }
 
-export function paintFill(
-	renderer: SVGRenderer,
-	generator: RoughGenerator,
-	layer: SVGGElement,
-	plan: FillPlan,
-	style: { color: string; roughness: number; rtl: boolean },
-	progress: number
-): void {
-	renderFillNodes(renderer, generator, layer, plan, style);
-	applyFillProgress(layer, progress, style.rtl);
-}
-
 export interface RenderedStrokeGroups {
 	groups: { paths: SVGPathElement[]; lengths: number[] }[];
 }
@@ -460,17 +461,6 @@ export function applyFillProgress(layer: SVGGElement, progress: number, rtl: boo
 	// wipe across the layer so the marker feels dragged
 	const hidden = (1 - clamped) * 100;
 	layer.style.clipPath = rtl ? `inset(0 0 0 ${hidden}%)` : `inset(0 ${hidden}% 0 0)`;
-}
-export function paintStrokes(
-	renderer: SVGRenderer,
-	generator: RoughGenerator,
-	layer: SVGGElement,
-	plan: StrokePlan,
-	style: { color: string; strokeWidth: number; roughness: number },
-	progress: number
-): void {
-	const rendered = renderStrokeNodes(renderer, generator, layer, plan, style);
-	applyStrokeProgress(rendered, plan, progress);
 }
 
 export function renderStrokeNodes(

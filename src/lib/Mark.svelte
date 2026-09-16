@@ -54,9 +54,10 @@
 		at,
 		span
 	});
+	const attachment = $derived(active(annotation));
 	const spread = $derived({
 		...(cls ? { class: cls } : {}),
-		...active(annotation),
+		...attachment,
 		...props
 	});
 </script>

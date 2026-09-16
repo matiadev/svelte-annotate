@@ -56,11 +56,25 @@ describe('toReader', () => {
 		expect(toReader({ current: 1, clock: 2 })()).toBe(1);
 	});
 
+	it('does not read the value while binding', () => {
+		let reads = 0;
+		const holder = {
+			get current() {
+				reads += 1;
+				return 0.5;
+			}
+		};
+		const read = toReader(holder);
+		expect(reads).toBe(0);
+		expect(read()).toBe(0.5);
+		expect(reads).toBe(1);
+	});
+
 	it('rejects anything without a readable field', () => {
 		const bad = (value: unknown) => () => toReader(value as { current: number });
-		expect(bad({})).toThrowError(/current or clock/);
-		expect(bad(null)).toThrowError(/current or clock/);
-		expect(bad({ type: 'underline' })).toThrowError(/current or clock/);
+		expect(bad({})).toThrow(/current or clock/);
+		expect(bad(null)).toThrow(/current or clock/);
+		expect(bad({ type: 'underline' })).toThrow(/current or clock/);
 	});
 });
 
@@ -68,7 +82,7 @@ describe('ambient binder', () => {
 	it('throws a helpful error when nothing bound yet', async () => {
 		vi.resetModules();
 		const fresh = await import('./annotate.svelte');
-		expect(() => fresh.getMarkBinder()).toThrowError(/annotate\(\(\) => value\)/);
+		expect(() => fresh.getMarkBinder()).toThrow(/annotate\(\(\) => value\)/);
 	});
 
 	it('binds the ambient clock through annotate', () => {
@@ -93,6 +107,6 @@ describe('scoped binder', () => {
 		expect(Object.getOwnPropertySymbols(spread)).toHaveLength(1);
 		const direct = fresh.annotate.scoped(() => 1, { type: 'box', at: 0 });
 		expect(typeof direct).toBe('function');
-		expect(() => fresh.getMarkBinder()).toThrowError(/annotate\(\(\) => value\)/);
+		expect(() => fresh.getMarkBinder()).toThrow(/annotate\(\(\) => value\)/);
 	});
 });

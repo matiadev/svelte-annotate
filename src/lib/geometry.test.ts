@@ -72,6 +72,13 @@ describe('resolveOptions', () => {
 			'bottom'
 		]);
 	});
+
+	it('rejects a missing or unknown type', () => {
+		const bad = (type: string | undefined) => () =>
+			options({ type: type as AnnotateOptions['type'] });
+		expect(bad(undefined)).toThrow(/as its type/);
+		expect(bad('typo')).toThrow(/as its type/);
+	});
 });
 
 describe('buildStrokePlan', () => {

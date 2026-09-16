@@ -81,8 +81,6 @@ annotate(tween); // reads tween.current
 annotate(timeline); // reads timeline.clock
 ```
 
-Anything else throws and names the four accepted shapes.
-
 To draw one mark after another, give them different start times. With a clock going `0 → 2`:
 
 ```svelte

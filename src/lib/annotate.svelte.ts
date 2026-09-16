@@ -92,8 +92,8 @@ export function toReader(source: ProgressSource): () => number {
 	if (typeof source === 'number') return () => source;
 	if (typeof source === 'object' && source !== null) {
 		const holder = source as Partial<{ current: unknown; clock: unknown }>;
-		if (typeof holder.current === 'number') return () => holder.current as number;
-		if (typeof holder.clock === 'number') return () => holder.clock as number;
+		if ('current' in holder) return () => holder.current as number;
+		if ('clock' in holder) return () => holder.clock as number;
 	}
 	throw new Error(
 		'annotate needs a number, a getter, or an object with a numeric current or clock field.'

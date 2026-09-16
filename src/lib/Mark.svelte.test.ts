@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import Fixture from './MarkFixture.svelte';
-import ElFixture from './MarkElFixture.svelte';
-import ChildFixture from './MarkChildFixture.svelte';
+import Fixture from './MarkFixture.test.svelte';
+import ElFixture from './MarkElFixture.test.svelte';
+import ChildFixture from './MarkChildFixture.test.svelte';
+import ClockFixture from './MarkClockFixture.test.svelte';
 
 describe('Mark component', () => {
 	it('renders the chosen element with a painted overlay', async () => {
@@ -39,5 +40,24 @@ describe('Mark component', () => {
 	it('paints the annotation on the element from the child snippet', async () => {
 		const { container } = await render(ChildFixture);
 		await vi.waitFor(() => expect(container.querySelector('svg path')).not.toBeNull());
+	});
+
+	it('keeps the same overlay while the clock animates', async () => {
+		const { container, component } = await render(ClockFixture);
+		const clock = component.getClock();
+		const svg = container.querySelector('svg');
+		expect(svg).not.toBeNull();
+		clock.target = 1;
+		await vi.waitFor(() => expect(clock.current).toBe(1));
+		expect(container.querySelector('svg')).toBe(svg);
+	});
+
+	it('keeps the same overlay when pass-through props change', async () => {
+		const { container, rerender } = await render(ClockFixture, { href: '/a' });
+		const svg = container.querySelector('svg');
+		expect(svg).not.toBeNull();
+		await rerender({ href: '/b' });
+		expect(container.querySelector('a')?.getAttribute('href')).toBe('/b');
+		expect(container.querySelector('svg')).toBe(svg);
 	});
 });
