@@ -3,11 +3,17 @@
 	import type { Snippet } from 'svelte';
 	import type { AnnotateOptions, BoundAnnotate } from './annotate.svelte.js';
 
+	interface MarkChildArgs {
+		props: Record<string, unknown>;
+	}
+
 	interface Props extends AnnotateOptions {
 		mark?: BoundAnnotate;
 		class?: string;
 		as?: keyof HTMLElementTagNameMap;
-		children: Snippet;
+		el?: HTMLElement | null;
+		children?: Snippet;
+		child?: Snippet<[MarkChildArgs]>;
 		[key: string]: unknown;
 	}
 
@@ -15,7 +21,9 @@
 		mark,
 		class: cls = '',
 		as: tag = 'span',
+		el = $bindable<HTMLElement | null>(),
 		children,
+		child,
 		type,
 		color,
 		padding,
@@ -46,8 +54,17 @@
 		at,
 		span
 	});
+	const spread = $derived({
+		...(cls ? { class: cls } : {}),
+		...active(annotation),
+		...props
+	});
 </script>
 
-<svelte:element this={tag} class={cls} {...active(annotation)} {...props}>
-	{@render children()}
-</svelte:element>
+{#if child}
+	{@render child({ props: spread })}
+{:else}
+	<svelte:element this={tag} bind:this={el} {...spread}>
+		{@render children?.()}
+	</svelte:element>
+{/if}

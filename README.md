@@ -30,7 +30,9 @@ npm i @sveltecraft/annotate
 
 ## Syntaxes
 
-A mark can be attached, spread onto any element, or written as a component:
+A mark can be attached, spread onto any element, or written as a component.
+
+### Attach or spread
 
 ```svelte
 <!-- attach form -->
@@ -38,15 +40,34 @@ A mark can be attached, spread onto any element, or written as a component:
 
 <!-- spread form, composes with other props -->
 <span {...mark({ type: 'underline', at: 0 })}>text</span>
+```
 
-<!-- component form, reads the shared clock -->
+### Component
+
+```svelte
+<!-- reads the shared clock -->
 <Mark type="underline" at={0}>text</Mark>
 
-<!-- component form, explicit clock -->
+<!-- explicit clock -->
 <Mark mark={other} type="underline" at={0}>text</Mark>
 
-<!-- component form, pick the element -->
-<Mark as="div" type="underline" at={0}>text</Mark>
+<!-- pick the element -->
+<Mark as="a" type="underline" at={0}>text</Mark>
+
+<!-- element ref and attributes -->
+<Mark bind:el as="a" href="/docs" type="underline" at={0}>text</Mark>
+```
+
+### Your own element
+
+Render your own element and spread the mark onto it:
+
+```svelte
+<Mark type="underline" at={0}>
+	{#snippet child({ props })}
+		<a href="/docs" bind:this={el} {...props}>text</a>
+	{/snippet}
+</Mark>
 ```
 
 ## Clocks
@@ -57,7 +78,7 @@ A clock is just a number that changes over time. Each mark draws from `at` (defa
 annotate(2); // fixed number, draws once at full progress
 annotate(() => value); // re-read on every update
 annotate(tween); // reads tween.current
-annotate(scene); // reads scene.clock
+annotate(timeline); // reads timeline.clock
 ```
 
 Anything else throws and names the four accepted shapes.
@@ -116,4 +137,6 @@ With no clock at all, `<Mark>` throws and tells you the one line to add.
 | `at`          | `0`                     | clock value where the draw starts                                                     |
 | `span`        | `1`                     | clock units the draw takes                                                            |
 
-`<Mark>` takes the same options as props, plus `mark` for an explicit clock, `as` to pick the element (default `span`), and `class` plus any other element props (`id`, `style`, `data-*`, handlers) passed through to that element.
+`<Mark>` takes the same options as props, plus `mark` for an explicit clock, `as` to pick the element (default `span`), `bind:el` for a reference to that element, `child` for a snippet that renders your own element, and `class` plus any other element props (`id`, `style`, `data-*`, handlers) passed through to that element.
+
+The `child` snippet receives a `props` object holding the annotation plus everything passed to `<Mark>`, so spread it onto your element. The element you render is the one measured and annotated, and `bind:this` on it is your element reference.
